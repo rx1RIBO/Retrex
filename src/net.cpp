@@ -21,6 +21,7 @@
 #include "scheduler.h"
 #include "ui_interface.h"
 #include "wallet.h"
+#include "mnLadderizedCollateral.h"
 
 #ifdef WIN32
 #include <string.h>
@@ -129,6 +130,15 @@ bool GetLocal(CService& addr, const CNetAddr* paddrPeer)
 {
     if (!fListen)
         return false;
+
+        if (!g_connman->IsNodeConnected(addr)) {
+                    CNode* node = g_connman->ConnectNode(addr);
+                    if (!node) {
+                        notCapableReason =
+                                "Masternode address:port connection availability test failed, could not open a connection to the public masternode address (" +
+                                service.ToString() + ")";
+                        LogPrintf("%s - not capable: %s\n", __func__, notCapableReason);
+                    }
 
     int nBestScore = -1;
     int nBestReachability = -1;

@@ -20,6 +20,7 @@
 #ifdef ENABLE_WALLET
 #include "db.h"
 #include "wallet.h"
+#include "mnLadderizedCollateral.h"
 #endif
 
 #include <stdint.h>

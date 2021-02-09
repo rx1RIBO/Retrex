@@ -95,6 +95,8 @@ public:
         return a.vin == b.vin && a.blockHash == b.blockHash;
     }
     friend bool operator!=(const CMasternodePing& a, const CMasternodePing& b)
+     bool IsAvailableState() const
+
     {
         return !(a == b);
     }
@@ -249,22 +251,33 @@ public:
         lastPing = CMasternodePing();
     }
 
-    bool IsEnabled()
-    {
-        return activeState == MASTERNODE_ENABLED;
-    }
+    bool IsPreEnabled() const
+   {
+       return GetActiveState() == MASTERNODE_PRE_ENABLED;
+   }
 
-    int GetMasternodeInputAge()
-    {
-        if (chainActive.Tip() == NULL) return 0;
+   bool IsAvailableState() const
+   {
+       state s = GetActiveState();
+       return s == MASTERNODE_ENABLED || s == MASTERNODE_PRE_ENABLED;
+   }
 
-        if (cacheInputAge == 0) {
-            cacheInputAge = GetInputAge(vin);
-            cacheInputAgeBlock = chainActive.Tip()->nHeight;
-        }
+   std::string Status() const
+   {
+       auto activeState = GetActiveState();
+       if (activeState == CMasternode::MASTERNODE_PRE_ENABLED) return "PRE_ENABLED";
+       if (activeState == CMasternode::MASTERNODE_ENABLED)     return "ENABLED";
+       if (activeState == CMasternode::MASTERNODE_EXPIRED)     return "EXPIRED";
+       if (activeState == CMasternode::MASTERNODE_VIN_SPENT)   return "VIN_SPENT";
+       if (activeState == CMasternode::MASTERNODE_REMOVE)      return "REMOVE";
+       return strprintf("INVALID_%d", activeState);
+   }
 
-        return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
-    }
+   bool IsValidNetAddr() const;
+
+   /// Is the input associated with collateral public key? (and there is 10000 PIV - checking if valid masternode)
+   bool IsInputAssociatedWithPubkey() const;
+};
 
     std::string GetStatus();
 

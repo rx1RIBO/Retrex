@@ -16,6 +16,7 @@
 #include "utilmoneystr.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include "mnLadderizedCollateral.h"
 
 /** Object for who's going to get paid on which blocks */
 CMasternodePayments masternodePayments;
@@ -147,27 +148,20 @@ CMasternodePaymentDB::ReadResult CMasternodePaymentDB::Read(CMasternodePayments&
     return Ok;
 }
 
-void DumpMasternodePayments()
+// Reward Module < --- rxRibo/ patch 1
+uint256 CMasternodePaymentWinner::GetHash() const
 {
-    int64_t nStart = GetTimeMillis();
+    CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
+    ss << std::vector<unsigned char>(payee.begin(), payee.end());
+    ss << nBlockHeight;
+    ss << vinMasternode.prevout;
+    return ss.GetHash();
+}
 
-    CMasternodePaymentDB paymentdb;
-    CMasternodePayments tempPayments;
-
-    LogPrint("masternode","Verifying mnpayments.dat format...\n");
-    CMasternodePaymentDB::ReadResult readResult = paymentdb.Read(tempPayments, true);
-    // there was an error and it was not an error on file opening => do not proceed
-    if (readResult == CMasternodePaymentDB::FileError)
-        LogPrint("masternode","Missing budgets file - mnpayments.dat, will try to recreate\n");
-    else if (readResult != CMasternodePaymentDB::Ok) {
-        LogPrint("masternode","Error reading mnpayments.dat: ");
-        if (readResult == CMasternodePaymentDB::IncorrectFormat)
-            LogPrint("masternode","magic is ok but data has invalid format, will try to recreate\n");
-        else {
-            LogPrint("masternode","file format is unknown or invalid, please fix it manually\n");
-            return;
-        }
-    }
+std::string CMasternodePaymentWinner::GetStrMessage() const
+{
+    return vinMasternode.prevout.ToStringShort() + std::to_string(nBlockHeight) + HexStr(payee);
+}
     LogPrint("masternode","Writting info to mnpayments.dat...\n");
     paymentdb.Write(masternodePayments);
 

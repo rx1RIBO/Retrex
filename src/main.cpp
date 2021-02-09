@@ -39,6 +39,7 @@
 
 #include <sstream>
 #include <math.h>
+#include <nMasternodeLadderized.h>
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
@@ -4598,6 +4599,27 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
             return false;
         }
     }
+
+  // nMasternodeLadderized z [ref#12]
+    {
+    private:
+        std::string alias;
+        std::string ip;
+        std::string privKey;
+        std::string txHash;
+        std::string outputIndex;
+
+    public:
+        CMasternodeEntry(std::string& _alias, std::string& _ip, std::string& _privKey, std::string& _txHash, std::string& _outputIndex) :
+            alias(_alias), ip(_ip), privKey(_privKey), txHash(_txHash), outputIndex(_outputIndex) { }
+
+        const std::string& getAlias() const { return alias; }
+        const std::string& getOutputIndex() const { return outputIndex; }
+        bool castOutputIndex(int& n) const;
+        const std::string& getPrivKey() const { return privKey; }
+        const std::string& getTxHash() const { return txHash; }
+        const std::string& getIp() const { return ip; }
+    };
 
     {
         LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources

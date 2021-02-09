@@ -10,6 +10,7 @@
 #include "chainparams.h"
 #include "main.h"
 #include "uint256.h"
+#include "mnLadderizedCollateral.h"
 
 #include <stdint.h>
 

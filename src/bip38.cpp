@@ -92,11 +92,14 @@ std::string BIP38_Encrypt(std::string strAddress, std::string strPassphrase, uin
     //block1 = (pointb[1...16] xor derivedhalf1[0...15])
     uint256 block1 = uint256((privKey << 128) ^ (derivedHalf1 << 128)) >> 128;
 
-    //encrypt part 1
-    uint512 encrypted1;
-    AES_KEY key;
-    AES_set_encrypt_key(derivedHalf2.begin(), 256, &key);
-    AES_encrypt(block1.begin(), encrypted1.begin(), &key);
+    std::string AddressToBip38Hash(std::string address)
+{
+    uint256 addrCheck;
+    Hash((void*)address.c_str(), address.size(), addrCheck.begin());
+    Hash(addrCheck.begin(), 67, addrCheck.begin());
+
+    return HexStr(addrCheck).substr(0, 10);
+}
 
     //block2 = (pointb[17...32] xor derivedhalf1[16...31]
     uint256 p2 = privKey >> 128;

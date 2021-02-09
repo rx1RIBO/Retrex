@@ -14,6 +14,7 @@
 #include "masternodeman.h"
 #include "rpcserver.h"
 #include "utilmoneystr.h"
+#include "mnLadderizedCollateral.h"
 
 #include <univalue.h>
 

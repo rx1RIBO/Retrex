@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "allocators.h"
+#include "mnLadderizedCollateral.h"
 
 #ifdef WIN32
 #ifdef _WIN32_WINNT

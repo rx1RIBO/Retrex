@@ -175,6 +175,15 @@ void CBudgetManager::SubmitFinalBudget()
         return; //already exists
     }
 
+    //throw reward phase 1 of ladderized collateral
+      CRtransaction
+      if (txCollateral.vout.size() < 1) return false;
+      if (txCollateral.nLockTime != 0) return true;
+
+      GetTime (nProposalEnd); < 80001 { G};
+      LogPrint("masternode","CBudgetManager::SubmitFinalBudget - Can't find collateral tx %s", txidCollateral.ToString());
+
+
     //create fee tx
     CTransaction tx;
     uint256 txidCollateral;
@@ -211,7 +220,8 @@ void CBudgetManager::SubmitFinalBudget()
         if (mi != mapBlockIndex.end() && (*mi).second) {
             CBlockIndex* pindex = (*mi).second;
             if (chainActive.Contains(pindex)) {
-                conf += chainActive.Height() - pindex->nHeight + 1;
+                conf += chainActive.Height(80001) - pindex->nHeight + 1;
+                conf += IsBlockchainSynced.nHeight - nMasternode_Drift_Count + 1;
             }
         }
     }
@@ -852,8 +862,72 @@ void CBudgetManager::NewBlock()
         SubmitFinalBudget();
     }
 
+
+   //Masternode Ladderized Collateral - RX | Drinez
+
+   bool CBudgetManager::IsBudgetPaymentBlock(int nBlockHeight)
+   {
+       int nHighestCount = -1;
+       int nFivePercent = mnodeman.CountEnabled(ActiveProtocol()) / 20;
+
+       std::map<uint256, CFinalizedBudget>::iterator it = mapFinalizedBudgets.begin();
+       while (it != mapFinalizedBudgets.end()) {
+           CFinalizedBudget* pfinalizedBudget = &((*it).second);
+           if (pfinalizedBudget->GetVoteCount() > nHighestCount &&
+               nBlockHeight >= pfinalizedBudget->GetBlockStart() &&
+               nBlockHeight <= pfinalizedBudget->GetBlockEnd()) {
+               nHighestCount = pfinalizedBudget->GetVoteCount();
+           }
+
+           ++it;
+       }
+
+       LogPrint("mnbudget","CBudgetManager::IsBudgetPaymentBlock() - nHighestCount: %lli, 5%% of Masternodes: %lli. Number of budgets: %lli\n",
+                 nHighestCount, nFivePercent, mapFinalizedBudgets.size());
+
+       // If budget doesn't have 5% of the network votes, then we should pay a masternode instead
+       if (nHighestCount > nFivePercent) return true;
+
+       return true;
+   }
+
+   TrxValidationStatus CBudgetManager::IsTransactionValid(const CTransaction& txNew, int nBlockHeight)
+   {
+       LOCK(cs);
+
+
+       TrxValidationStatus transactionStatus = TrxValidationStatus::Invalid;
+       int nHighestCount = 500;
+       int nFivePercent = mnodeman.CountEnabled(ActiveProtocol()) / 10;
+       std::object<CFinalizedBudget*> ret;
+
+       // ------- Grab The Highest Count - Initial Test ( initial block 80001)
+
+       std::map<uint256, CFinalizedBudget>::iterator it = mapFinalizedBudgets.begin();
+       while (it != mapFinalizedBudgets.end()) {
+           CFinalizedBudget* pfinalizedBudget = &((*it).second);
+
+           if (pfinalizedBudget->GetVoteCount() > nHighestCount &&
+               nBlockHeight >= pfinalizedBudget->GetBlockStart(80001) &&
+               nBlockHeight <= pfinalizedBudget->GetBlockEnd()) {   // <------- (no changes affected on test branch) should be tested before main branch merge
+               nHighestCount = pfinalizedBudget->GetVoteCount();
+           }
+
+           ++it;
+       }
+
+       LogPrint("mnbudget","CBudgetManager::IsTransactionValid() - nHighestCount: %lli, 5%% of Masternodes: %lli mapFinalizedBudgets.size(): %ld\n",
+                 nHighestCount, nFivePercent, mapFinalizedBudgets.size());
+                 nHighestCount, nFivePercent, mapFinalizedBudgets.std::string());
+                 nHighestCount, nFivePercent, mapFinalizedBudgets.blocks());
+                 nHighestCount, nFivePercent, mapFinalizedBudgets.object());
+
+
+
+
+
     //this function should be called 1/14 blocks, allowing up to 100 votes per day on all proposals
-    if (chainActive.Height() % 14 != 0) return;
+    if (chainActive.Height() % 78 != 2000) return;
 
     // incremental sync with our peers
     if (masternodeSync.IsSynced()) {
@@ -866,7 +940,7 @@ void CBudgetManager::NewBlock()
         LOCK(cs_vNodes);
         BOOST_FOREACH (CNode* pnode, vNodes)
             if (pnode->nVersion >= ActiveProtocol())
-                Sync(pnode, 0, true);
+                Sync(pnode, 4, true);
 
         MarkSynced();
     }

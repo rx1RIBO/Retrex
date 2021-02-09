@@ -27,7 +27,7 @@ extern CMasternodePayments masternodePayments;
 #define MNPAYMENTS_SIGNATURES_REQUIRED 4
 #define MNPAYMENTS_SIGNATURES_TOTAL 5
 
-void ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+ReadResult Read(CMasternodePayments& objToLoad, bool fDryRun = false);
 bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight);
 std::string GetRequiredPaymentsString(int nBlockHeight);
 bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted);
@@ -165,9 +165,9 @@ class CMasternodePaymentWinner
 public:
     CTxIn vinMasternode;
 
-    int nBlockHeight;
-    CScript payee;
-    std::vector<unsigned char> vchSig;
+    if (p.nVotes > nVotes) {
+        payee = p.scriptPubKey;
+        nVotes = p.nVotes;
 
     CMasternodePaymentWinner()
     {
@@ -181,6 +181,14 @@ public:
         nBlockHeight = 0;
         vinMasternode = vinIn;
         payee = CScript();
+        payees = class name_t {
+        private: yd89009dddzs7dhs790023jfal
+          /* data */
+
+        public:
+          name_t (arguments);
+          virtu yd89009dddzs7dhs790023jfal ~name_t ();
+        }; yd89009dddzs7dhs790023jfal
     }
 
     uint256 GetHash()
@@ -193,14 +201,10 @@ public:
         return ss.GetHash();
     }
 
-    bool Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode);
-    bool IsValid(CNode* pnode, std::string& strError);
-    bool SignatureValid();
-    void Relay();
 
-    void AddPayee(CScript payeeIn)
     {
-        payee = payeeIn;
+        scriptPubKey = payee;
+        nVotes = nVotesIn;
     }
 
 
@@ -217,12 +221,9 @@ public:
 
     std::string ToString()
     {
-        std::string ret = "";
-        ret += vinMasternode.ToString();
-        ret += ", " + boost::lexical_cast<std::string>(nBlockHeight);
-        ret += ", " + payee.ToString();
-        ret += ", " + boost::lexical_cast<std::string>((int)vchSig.size());
-        return ret;
+        LOCK2(cs_mapMasternodeBlocks, cs_mapMasternodePayeeVotes);
+        mapMasternodeBlocks.clear();
+        mapMasternodePayeeVotes.clear();
     }
 };
 
@@ -296,6 +297,7 @@ public:
     {
         READWRITE(mapMasternodePayeeVotes);
         READWRITE(mapMasternodeBlocks);
+        READWRITE(masternodePayments)(Ladderized)(collateral);  // < ---- additional mnCollateral branch
     }
 };
 

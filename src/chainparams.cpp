@@ -54,10 +54,10 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0, uint256("00000c5acb1e2af48be67268711184d3e03012eecb06e42b304c7d89681ff863"));
+    (0, uint256("00000dc35e127cad96254d7ca015b21bef1010479e5c5b4b7010837f947dd76d"));
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1611316314, // * UNIX timestamp of last checkpoint block
+    1612202307, // * UNIX timestamp of last checkpoint block
     0,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
@@ -68,7 +68,7 @@ static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
     (0, uint256("0x"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1611316314,
+    1612202307,
     0,
     250};
 
@@ -78,7 +78,7 @@ static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
 //    (0, uint256("0x000001733877023e9a2751258b8119e420e153377ffd21c996af58c8cdceede5")); // quark
 static const Checkpoints::CCheckpointData dataRegtest = {
     &mapCheckpointsRegtest,
-    1611316314,
+    1612202307,
     0,
     100};
 
@@ -167,45 +167,22 @@ public:
         genesis.hashPrevBlock = 0;
         genesis.hashMerkleRoot = genesis.BuildMerkleTree();
         genesis.nVersion = 1;
-        genesis.nTime = 1611316314;
+        genesis.nTime = 1612202307;
         genesis.nBits = 0x1e0ffff0;
-        genesis.nNonce = 897185;
+        genesis.nNonce = 1058345;
 
-        if(genesis.GetHash() != uint256("0x"))
-                {
-                    printf("Searching for genesis block...\n");
-                    uint256 hashTarget = CBigNum().SetCompact(genesis.nBits).getuint256();
-                    while(uint256(genesis.GetHash()) > hashTarget)
-                    {
-                        ++genesis.nNonce;
-                        if (genesis.nNonce == 0)
-                        {
-                            printf("NONCE WRAPPED, incrementing time");
-                            std::cout << std::string("NONCE WRAPPED, incrementing time:\n");
-                            ++genesis.nTime;
-                        }
-                        if (genesis.nNonce % 10000 == 0)
-                        {
-                            printf("Mainnet: nonce %08u: hash = %s \n", genesis.nNonce, genesis.GetHash().ToString().c_str(), genesis.hashMerkleRoot.ToString().c_str());
-                        }
-                    }
-                    printf("block.nTime = %u \n", genesis.nTime);
-                    printf("block.nNonce = %u \n", genesis.nNonce);
-                    printf("block.GetHash = %s\n", genesis.GetHash().ToString().c_str());
-                    printf("block.merklehash = %s\n", genesis.hashMerkleRoot.ToString().c_str());
-                }
 
         hashGenesisBlock = genesis.GetHash();
-        assert(genesis.hashMerkleRoot == uint256("0x3252257d5d515e77b31b46f04c7d4c56311522b2374269930856017692a9ad0f"));
-        assert(hashGenesisBlock == uint256("0x00000c5acb1e2af48be67268711184d3e03012eecb06e42b304c7d89681ff863"));
+        assert(genesis.hashMerkleRoot == uint256("0xeb498863362c0a90c7b151aeecc9669c4acb776829ae929c9ab7c8175ae25d82"));
+        assert(hashGenesisBlock == uint256("0x00000dc35e127cad96254d7ca015b21bef1010479e5c5b4b7010837f947dd76d"));
 
         // Zerocoin, activated never
         nZerocoinStartHeight = INT_MAX;
         nZerocoinStartTime = INT_MAX;
 
-        vSeeds.push_back(CDNSSeedData("0", "95.179.136.229"));             // Primary DNS Seeder
-        vSeeds.push_back(CDNSSeedData("1", "136.244.115.65"));      // Secondary DNS Seeder
-        vSeeds.push_back(CDNSSeedData("2", "192.248.166.110"));     // Third DNS Seeder
+        vSeeds.push_back(CDNSSeedData("0", "95.179.151.222"));             // Primary DNS Seeder
+        vSeeds.push_back(CDNSSeedData("1", "217.69.4.232"));      // Secondary DNS Seeder
+        vSeeds.push_back(CDNSSeedData("2", "140.82.34.125"));     // Third DNS Seeder
 
         // https://en.bitcoin.it/wiki/List_of_address_prefixes
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 60);     // starts with R
@@ -321,7 +298,7 @@ public:
             genesis hash: 000002244385b8f9a32b98ab6b9eb0c0e30acfce4f76fb63fbd5b6ba3d4936cf
         */
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1611262459;
+        genesis.nTime = 1612202307;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 601665;
 
@@ -411,7 +388,7 @@ public:
             nonce: 233847
             genesis hash: 000006ba3bf77872f9c4747ed7451309cfc89c85f6b74f19254868211162de4a
         */
-        genesis.nTime = 1611262459;
+        genesis.nTime = 1612202307;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 233847;
 

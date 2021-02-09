@@ -18,6 +18,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
+#include <nMasternodeLadderized>
 
 #include <stdio.h>
 
