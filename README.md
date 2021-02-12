@@ -18,6 +18,8 @@ Development of Retrex Ladderized collateral system
 <p>5 . net.hash/{ref#12} / #include mnLadderizedCollateral.h ( FIXED)</p>
 
 
+<p>66 .(BETA TESTING PHASE MN LADDERIZED collateral) Wrapped up - Ready for testings </p>
+
 
 
 
